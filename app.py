@@ -214,13 +214,26 @@ sst.reactions_data_editor = st.data_editor(
 st.header("Reator")
 reactor_col1, reactor_col2 = st.columns(2)
 with reactor_col1:
-    st.write("Componentes selecionados")
-    selected_components = st.data_editor(
-        pd.DataFrame({"comp_id": components_df["id"], "initial_conc": None}),
-        hide_index=True,
-        column_config={"comp_id": "ID componente","initial_conc": st.column_config.NumberColumn("Concentração inicial (mol/L)")}
-    )
+    molar_or_mass_base = st.selectbox("Base", options=["Base molar", "Base mássica"])
 
 with reactor_col2:
     st.number_input("Volume do reator (L)")
-    st.number_input("Intensidade Luminosa (cd)")
+
+
+st.write("É possível colar os dados experimentais direto do Excel, Google Sheets ou similar.")
+st.write("O ID do componente deve ser o mesmo fornecido na primeira tabela")
+st.write("A concentração do componente no tempo zero deve ser fornecida")
+
+st.subheader("Dados experimentais")
+exp_data = st.data_editor(
+    pd.DataFrame(columns=["time", "conc", "comp_id"]),
+    hide_index=True,
+    column_config={
+        "time": "Tempo (min)",
+        "conc": "Concentração (mmol/L)" if molar_or_mass_base == "Base molar" else "Concentração (mg/L)",
+        "comp_id": "ID componente"
+    },
+    num_rows="dynamic"
+)
+
+st.button("Calcular constantes")
